@@ -8,8 +8,11 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 
+import tkinter as tk
+from tkinter import ttk
+from PIL import ImageTk, Image
 # Define and parse user input arguments
-
+stop_if = False
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', help='Path to YOLO model file (example: "runs/detect/train/weights/best.pt")',
                     required=True)
@@ -184,7 +187,7 @@ while True:
         classidx = int(detections[i].cls.item())
         classname = labels[classidx]
 
-        # Get bounding box confidence
+        # Get bounding box confidence(Получение уровня доверия)
         conf = detections[i].conf.item()
 
         # Draw box if confidence threshold is high enough
@@ -201,8 +204,48 @@ while True:
 
             # Basic example: count the number of objects in the image
             object_count = object_count + 1
+            if object_count == 2 and not stop_if:
+                if classname == "Entoloma_Lividum":
+                    root = tk.Tk()
+                    root.title("Информационное сообщение")
+                    
+                    # Установка размера окна
+                    root.geometry("500x400")
+                    
+                    # Загрузка изображения (замените путь на свой)
+                    try:
+                        img = Image.open("scale_1200.jpg")  # Укажите путь к вашему изображению
+                        img = img.resize((200, 200), Image.LANCZOS)
+                        photo = ImageTk.PhotoImage(img)
+                        
+                        # Создание виджета для изображения
+                        image_label = ttk.Label(root, image=photo)
+                        image_label.image = photo  # сохраняем ссылку на изображение
+                        image_label.pack(pady=10)
+                    except FileNotFoundError:
+                        error_label = ttk.Label(root, text="Изображение не найдено", foreground="red")
+                        error_label.pack(pady=10)
+                    
+                    # Заголовок сообщения
+                    title_label = ttk.Label(root, text="Энтолома ядовитая", font=("Arial", 14, "bold"))
+                    title_label.pack(pady=5)
+                    
+                    # Текстовое описание
+                    description_text = """Энтолома ядовитая (или розовопластинник ядовитый) — ядовитый вид грибов рода энтолома.
 
-    # Calculate and draw framerate (if using video, USB, or Picamera source)
+    При употреблении этот гриб раздражает слизистую оболочку желудочно-кишечного тракта, вызывая «резиноидный синдром» (боли в животе, рвота, жидкий стул)."""
+                    
+                    description_label = ttk.Label(root, text=description_text, wraplength=400, justify="center")
+                    description_label.pack(pady=10, padx=20)
+                    
+                    # Кнопка закрытия
+                    close_button = ttk.Button(root, text="Закрыть", command=root.destroy)
+                    close_button.pack(pady=10)
+                    
+                    # Запуск главного цикла
+                    root.mainloop()
+                    stop_if = True
+    #Calculate and draw framerate (if using video, USB, or Picamera source)
     if source_type == 'video' or source_type == 'usb' or source_type == 'picamera':
         cv2.putText(frame, f'FPS: {avg_frame_rate:0.2f}', (10,20), cv2.FONT_HERSHEY_SIMPLEX, .7, (0,255,255), 2) # Draw framerate
     
@@ -247,3 +290,54 @@ elif source_type == 'picamera':
     cap.stop()
 if record: recorder.release()
 cv2.destroyAllWindows()
+object_count_Entoloma_Lividum=0
+# if classname == "Entoloma_Lividum":
+#     object_count_Entoloma_Lividum+=1
+
+# if object_count_Entoloma_Lividum == 1 and not stop_if:
+#     stop_if = True
+
+# def create_message_window():
+#     # Создание главного окна
+#     root = tk.Tk()
+#     root.title("Информационное сообщение")
+    
+#     # Установка размера окна
+#     root.geometry("500x400")
+    
+#     # Загрузка изображения (замените путь на свой)
+#     try:
+#         img = Image.open("example.png")  # Укажите путь к вашему изображению
+#         img = img.resize((200, 200), Image.LANCZOS)
+#         photo = ImageTk.PhotoImage(img)
+        
+#         # Создание виджета для изображения
+#         image_label = ttk.Label(root, image=photo)
+#         image_label.image = photo  # сохраняем ссылку на изображение
+#         image_label.pack(pady=10)
+#     except FileNotFoundError:
+#         error_label = ttk.Label(root, text="Изображение не найдено", foreground="red")
+#         error_label.pack(pady=10)
+    
+#     # Заголовок сообщения
+#     title_label = ttk.Label(root, text="Важное сообщение", font=("Arial", 14, "bold"))
+#     title_label.pack(pady=5)
+    
+#     # Текстовое описание
+#     description_text = """Это пример информационного сообщения с изображением и текстовым описанием.
+    
+# Вы можете разместить здесь любой текст, который хотите донести до пользователя. 
+# Текст может быть многострочным и содержать важную информацию."""
+    
+#     description_label = ttk.Label(root, text=description_text, wraplength=400, justify="center")
+#     description_label.pack(pady=10, padx=20)
+    
+#     # Кнопка закрытия
+#     close_button = ttk.Button(root, text="Закрыть", command=root.destroy)
+#     close_button.pack(pady=10)
+    
+#     # Запуск главного цикла
+#     root.mainloop()
+
+# # Вызов функции для создания окна
+# create_message_window()
